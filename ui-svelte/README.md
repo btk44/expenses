@@ -1,38 +1,30 @@
-# create-svelte
+# TransactionService - user interface (svelte)
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## How to build and run docker container:
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
+* Build docker container
+    ```
+    sudo docker build -t expenses-ui -f Dockerfile .
+    ```
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+* save image outside docker to copy it to other machine
+    ```
+    sudo docker save -o transaction-service-ui.tar expenses-ui
+    ```
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+* change permissions
+    ```
+    sudo chmod a+rwx transaction-service-ui.tar
+    ```
+* now copy it to other machine 
 
-## Developing
+* load image to other docker
+    ```
+    sudo docker load -i path/to/copied/file/transaction-service-ui.tar
+    ```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+* now run docker compose in the other docker
+    ```
+    sudo docker compose up -d
+    ```

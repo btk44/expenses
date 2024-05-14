@@ -29,16 +29,11 @@
 
 * load image to other docker
     ```
-    sudo docker load -i docker/samba/tmp/transaction-service.tar
+    sudo docker load -i path/to/copied/file/transaction-service.tar
     ```
 
-### now run docker compose in the other docker
-services:
-  db:
-    image: expenses-backend
-    container_name: expenses-backend
-    network_mode: bridge
-    restart: always
-    ports:
-      - 5001:8080
+* now run docker compose in the other docker
+    ```
+    sudo docker compose up -d
+    ```
 

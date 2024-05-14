@@ -1,0 +1,8 @@
+services:
+  db:
+    image: expenses-backend
+    container_name: expenses-backend
+    network_mode: bridge
+    restart: always
+    ports:
+      - 5001:8080
