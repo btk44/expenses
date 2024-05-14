@@ -1,0 +1,8 @@
+services:
+  db:
+    image: expenses-ui
+    container_name: expenses-ui
+    network_mode: bridge
+    restart: always
+    ports:
+      - 5002:3000

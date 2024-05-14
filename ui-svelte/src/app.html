@@ -1,0 +1,39 @@
+<!doctype html>
+<style>
+.green-mode{
+    --primary-color: #526F53;
+    --primary-color-dark:#374F37;
+    --primary-color-light: #9DB195;
+    --accent-color: #CEAC6C;
+    --accent-color-dark: #BC9550;
+    --accent-color-light: #E9CF70;
+    --background-color: #fafafa;
+    --background-color-control: white;
+    --background-color-selected: lightgray; 
+    --text-color: white;
+    --inverted-text-color: white;
+    --placeholder-text-color: lightgray;
+    --control-box-shadow: 1px 2px 3px rgb(88, 88, 88);
+    --error-color: rgb(198, 79, 79);
+
+    --red-text-color: rgb(198, 79, 79);
+    --green-text-color: rgb(52, 124, 46);
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { box-shadow: inset 0 0 5px var(--accent-color); }
+::-webkit-scrollbar-thumb { background: var(--primary-color-light); }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+</style>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" class="green-mode">
+		<div id="main">%sveltekit.body%</div>
+	</body>
+</html>
