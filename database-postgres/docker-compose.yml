@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres
+    container_name: expenses-db
+    network_mode: bridge
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: MyPassword
+    volumes:
+      - /home/bk/docker/postgres/pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
