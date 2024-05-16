@@ -129,12 +129,14 @@
         if(!hasError && !isDataMissing){
             try{
                 saving = true
+                const lastAccountId = transaction.accountId
                 //await sleep(1000)
                 transaction.id =  (await TransactionService.SaveTransactions([transaction]))[0].id
                 await reloadAccount(1, transaction.accountId)
                 dispatch('transactionSubmit', { transaction })
                 transaction = GetEmptyTransaction()
-                currentInput = ''
+                transaction.accountId = lastAccountId
+                currentInput = `${transaction.accountId} `
             }
             catch { 
                 alert('server error')
