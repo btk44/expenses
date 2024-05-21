@@ -83,7 +83,6 @@
 
             if(pageChange === 0){
                 nextPage = pageCount -1 // initial load -> go to last page
-                console.log(nextPage)
             }
 
             const transactionSearchResult = await TransactionService.SearchTransactions({...getFilters(), take: pageSize, offset: nextPage*pageSize})
@@ -126,6 +125,7 @@
 
     const filtersClick = () => { filtersVisible = !filtersVisible }
     const filtersConfirmed = () => { filtersVisible = false; loadTransactionPage(0) }
+    const filtersConfirmedWithEnter = (event: any) => { if(event.key === 'Enter') filtersConfirmed() }
     const transactionInputSubmit = (event: any) => {
         selectedRow = -1
         const transactionIndex = displayTransactions.indexOf(event.detail.transaction)
@@ -193,11 +193,11 @@
     <div class="other">
         <table class={filtersVisible ? '' : 'hidden'}>
             <tr>
-                <td class="aln-l w-20pc"><input type="text" bind:value={dateFilterText} placeholder="data: od, do"/></td>
-                <td class="aln-l w-20pc"><input type="text" bind:value={accountFilterText} placeholder="konto: id, id"/></td>
-                <td class="aln-l w-20pc"><input type="text" bind:value={categoryFilterText} placeholder="kategoria: id, id"/></td>
-                <td class="aln-l w-20pc"><input type="text" bind:value={amountFilterText} placeholder="kwota: od, do"/></td>
-                <td class="aln-l w-20pc"><input type="text" bind:value={commentFilterText} placeholder="komentarz"/></td>
+                <td class="aln-l w-20pc"><input type="text" on:keypress={filtersConfirmedWithEnter} bind:value={dateFilterText} placeholder="data: od, do"/></td>
+                <td class="aln-l w-20pc"><input type="text" on:keypress={filtersConfirmedWithEnter} bind:value={accountFilterText} placeholder="konto: id, id"/></td>
+                <td class="aln-l w-20pc"><input type="text" on:keypress={filtersConfirmedWithEnter} bind:value={categoryFilterText} placeholder="kategoria: id, id"/></td>
+                <td class="aln-l w-20pc"><input type="text" on:keypress={filtersConfirmedWithEnter} bind:value={amountFilterText} placeholder="kwota: od, do"/></td>
+                <td class="aln-l w-20pc"><input type="text" on:keypress={filtersConfirmedWithEnter} bind:value={commentFilterText} placeholder="komentarz"/></td>
             </tr>
         </table>
         <div class="actions">

@@ -33,10 +33,10 @@ public class AccountSearchCommandHandler
                                      .Where(x => x.OwnerId == command.OwnerId);
 
         if (command.AmountFrom.HasValue)
-            accountQuery = _dbContext.Accounts.Where(x => x.Amount >= command.AmountFrom);
+            accountQuery = accountQuery.Where(x => x.Amount >= command.AmountFrom);
 
         if ( command.AmountTo.HasValue)
-            accountQuery = _dbContext.Accounts.Where(x => x.Amount <= command.AmountTo);
+            accountQuery = accountQuery.Where(x => x.Amount <= command.AmountTo);
 
         if (command.Active.HasValue)
             accountQuery = accountQuery.Where(x => command.Active == x.Active);

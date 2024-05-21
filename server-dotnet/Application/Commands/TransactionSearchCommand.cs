@@ -51,16 +51,16 @@ public class TransactionSearchCommandHandler
         var transactionQuery = _dbContext.Transactions.Where(x => x.OwnerId == command.OwnerId);
         
         if (command.AmountFrom.HasValue)
-            transactionQuery = _dbContext.Transactions.Where(x => x.Amount >= command.AmountFrom);
+            transactionQuery = transactionQuery.Where(x => x.Amount >= command.AmountFrom);
 
         if (command.AmountTo.HasValue)
-            transactionQuery = _dbContext.Transactions.Where(x => x.Amount <= command.AmountTo);
+            transactionQuery = transactionQuery.Where(x => x.Amount <= command.AmountTo);
 
         if (command.DateFrom.HasValue)
-            transactionQuery = _dbContext.Transactions.Where(x => x.Date  >= command.DateFrom);
+            transactionQuery = transactionQuery.Where(x => x.Date  >= command.DateFrom);
 
         if (command.DateTo.HasValue)
-            transactionQuery = _dbContext.Transactions.Where(x => x.Date <= command.DateTo);
+            transactionQuery = transactionQuery.Where(x => x.Date <= command.DateTo);
 
         if( command.Id.HasValue)
             transactionQuery = transactionQuery.Where(x => x.Id == command.Id);
