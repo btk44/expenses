@@ -41,7 +41,7 @@
             return new Date((new Date()).setTime(new Date(dateString).getTime()+12*60*60*1000))
         } 
 
-        const searchFilters: TransactionSearchFilters = {ownerId: 1}
+        const searchFilters: TransactionSearchFilters = {ownerId: 1, active: true}
 
         if(dateFilterText.length){
             const dateStrings = dateFilterText.split(',')
@@ -171,8 +171,8 @@
             {#each displayTransactions as transaction, index}
             <tr class={selectedRow === index ? 'selected' : ''} on:dblclick={() => { rowDoubleClick(transaction, index) }}>
                 <td class="aln-l w-20pc">{formatDate(transaction.date)}</td>
-                <td class="aln-l w-20pc">{accounts[transaction.accountId]?.name ?? ''}</td>
-                <td class="aln-l w-20pc">{categories[transaction.categoryId]?.name ?? ''}</td>
+                <td class="aln-l w-20pc" title={transaction.accountId.toString()}>{accounts[transaction.accountId]?.name ?? ''}</td>
+                <td class="aln-l w-20pc" title={transaction.categoryId.toString()}>{categories[transaction.categoryId]?.name ?? ''}</td>
                 <td class="aln-r w-10pc"><span class={transaction.amount > 0 ? 'green-text' : 'red-text'}>{formatAmount(transaction.amount)}</span></td>
                 <td class="aln-l w-10pc">{accountCurrency[transaction.accountId] ?? ''}</td>
                 <td class="aln-l w-20pc">{transaction.comment}</td>

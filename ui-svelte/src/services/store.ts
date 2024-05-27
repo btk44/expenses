@@ -59,8 +59,8 @@ export const initDataStore = async (ownerId: number, forceReload?: boolean) => {
         return await Promise.resolve()
     }
   
-    const accountsCall = TransactionService.SearchAccounts({ownerId: ownerId, active: true})
-    const categoryCall = TransactionService.SearchCategories({ownerId: ownerId, active: true})
+    const accountsCall = TransactionService.SearchAccounts({ownerId: ownerId})
+    const categoryCall = TransactionService.SearchCategories({ownerId: ownerId})
     const currencyCall = TransactionService.SearchCurrencies({active: true})
   
     try{

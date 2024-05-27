@@ -12,7 +12,7 @@
             result = result.concat(originalCategoriesList.filter(y => y.parentId === x.id))
         })
         
-        return result
+        return result.filter(x => x.active)
     })()
 </script>
 
