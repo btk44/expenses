@@ -149,6 +149,7 @@
     let standardMode = true
 
     let ullageInput = ''
+    const resetUllageErrorFlags = () => { ullageAccountError = ullageCategoryError = realAmountError = cashError = false }
     let ullageAccountError = false
     let ullageCategoryError = false
     let realAmountError = false
@@ -165,9 +166,18 @@
     $: ullageCategoryText = ullageCategoryId <= 0 ? defaultCategoryText : categories[ullageCategoryId].name
     $: realAmountText = realAmountError ? defaultRealAmountText : realAmount.toString()
     $: cashText = cashError ? defaultCashText : cash.toString()
+    $: ullageText = ullageHasError || ullageDataMissing ? '0' : Math.round((+accounts[ullageAccountId].amount - (+realAmount + +cash)) *100) / 100
+
+    $: ullageHasError = ullageAccountError || ullageCategoryError || realAmountError || cashError
+    $: ullageDataMissing = !(ullageAccountId > 0 && ullageCategoryId > 0)
 
     const processUllageInput = (event: any) => {
-        //resetErrorFlags()
+        resetUllageErrorFlags()
+        ullageAccountId = 0
+        ullageCategoryId = 0
+        realAmount = 0
+        cash = 0
+
         let ullageInput = event.target.value
 
         if (event.key === "Escape") ullageCancel()
@@ -176,33 +186,21 @@
             const inputValues = ullageInput.match(/\s{0,}[^\s]{1,}/g)
 
             if(inputValues){
-                let realAmount = 0
-                let cash = 0
-
                 const accountOutput = processAccountInput(inputValues[0])
                 const categoryOutput = processCategoryInput(inputValues[1])
                 const amountOutput = processAmountInput(inputValues[2])
                 const cashOutput = processAmountInput(inputValues[3])
 
-
-
                 ullageAccountError = accountOutput.isError
-
-                // console.log(accountOutput)
-                console.log(ullageAccountId)
-                console.log(ullageAccountError)
-                // console.log(accounts[ullageAccountId].name)
-
                 ullageAccountId = ullageAccountError ? 0 : accountOutput.value
                 ullageCategoryError = categoryOutput.isError
-                ullageCategoryId = ullageCategoryError ? 0 : categoryOutput.value
-
-            
-                
+                ullageCategoryId = ullageCategoryError ? 0 : categoryOutput.value        
                 realAmountError = amountOutput.isError
                 realAmount = realAmountError ? 0 : amountOutput.value
                 cashError = cashOutput.isError
                 cash = cashError ? 0 : cashOutput.value
+
+                //Math.round((+account.amount - (+realAmount + +cash)) *100) / 100
 
                 if(event.key === 'Enter') ullageSubmit()
             }
@@ -214,7 +212,9 @@
     }
 
     const ullageCancel = () => {
-
+        ullageInput = ''
+        resetUllageErrorFlags()
+        ullageAccountId = ullageCategoryId = realAmount = cash = 0 // this does not clear texts when Esc pressed
     }
 
 </script>
@@ -247,8 +247,8 @@
                 on:keyup={processUllageInput} 
                 bind:value={ullageInput}
                 autocomplete="off"/>
-        <!-- <button class="button-outlined" on:click={ullageSubmit} disabled={hasError || isDataMissing}>&#x2713;</button>
-        <button class="button-outlined" on:click={ullageCancel}>&#x2715;</button> -->
+        <button class="button-outlined" on:click={ullageSubmit} disabled={ullageHasError || ullageDataMissing}>&#x2713;</button>
+        <button class="button-outlined" on:click={ullageCancel}>&#x2715;</button>
         <div class="small-buttons">
             <button class={"button-outlined" + (standardMode ? '' : '-toggled' )} on:click={() => { standardMode = !standardMode }}>M</button>
         </div>
@@ -257,7 +257,8 @@
         <span class={ullageAccountError ? 'error-text': ''}>{ullageAccountText}</span>\
         <span class={ullageCategoryError ? 'error-text': ''}>{ullageCategoryText}</span>\
         <span class={realAmountError ? 'error-text': ''}>{realAmountText}</span>\
-        <span class={cashError ? 'error-text': ''}>{cashText}</span>
+        <span class={cashError ? 'error-text': ''}>{cashText}</span>&#8594;
+        <span class={cashError ? 'error-text': ''}>{ullageText}</span>
     </label>
     {/if}
 </div>
@@ -273,7 +274,7 @@
             display: flex; flex-direction: row; gap: 5px; 
             .small-buttons { 
                 display: flex; flex-direction: column; gap: 1px;
-                button { min-height: 0; height: calc($control-min-height/2 - 0px); padding: 2px; font-size: xx-small; } 
+                button { min-height: 0; height: calc($control-min-height/2 - 1px); padding: 2px; font-size: xx-small; } 
             }
         }
     }
