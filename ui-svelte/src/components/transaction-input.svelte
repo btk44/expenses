@@ -20,8 +20,6 @@
             currentInput =  ''
     }
 
-    //const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
     let transaction: Transaction = GetEmptyTransaction()
     let currentInput: string = ''
 
@@ -47,7 +45,6 @@
     $: isDataMissing = !(transaction.accountId > 0 && transaction.categoryId > 0)
 
     let saving = false
-    let remove = false
 
     const processAccountInput = (inputValue: string | undefined | null): processOutput => {
         if(!inputValue)
@@ -122,7 +119,6 @@
             try{
                 saving = true
                 const lastAccountId = transaction.accountId
-                //await sleep(1000)
                 transaction.id =  (await TransactionService.SaveTransactions([transaction]))[0].id
                 await reloadAccount(1, transaction.accountId)
                 dispatch('transactionSubmit', { transaction })
@@ -164,14 +160,14 @@
 
     $: ullageAccountText = ullageAccountId <= 0 ? defaultAccountText : accounts[ullageAccountId].name
     $: ullageCategoryText = ullageCategoryId <= 0 ? defaultCategoryText : categories[ullageCategoryId].name
-    $: realAmountText = realAmountError ? defaultRealAmountText : realAmount.toString()
-    $: cashText = cashError ? defaultCashText : cash.toString()
+    $: realAmountText = realAmount === 0 ? defaultRealAmountText : realAmount.toString()
+    $: cashText = cash === 0 ? defaultCashText : cash.toString()
     $: ullageText = ullageHasError || ullageDataMissing ? '0' : Math.round((+accounts[ullageAccountId].amount - (+realAmount + +cash)) *100) / 100
 
     $: ullageHasError = ullageAccountError || ullageCategoryError || realAmountError || cashError
     $: ullageDataMissing = !(ullageAccountId > 0 && ullageCategoryId > 0)
 
-    const processUllageInput = (event: any) => {
+    const processUllageInput = (event: any) => {       
         resetUllageErrorFlags()
         ullageAccountId = 0
         ullageCategoryId = 0
@@ -200,21 +196,35 @@
                 cashError = cashOutput.isError
                 cash = cashError ? 0 : cashOutput.value
 
-                //Math.round((+account.amount - (+realAmount + +cash)) *100) / 100
-
                 if(event.key === 'Enter') ullageSubmit()
             }
         }
     }
 
     const ullageSubmit = async () => {
-
+        if(!ullageHasError && !ullageDataMissing){
+            try{
+                saving = true
+                const calculatedUllage = Math.round((+accounts[ullageAccountId].amount - (+realAmount + +cash)) *100) / 100
+                const ullageTransaction = { ...GetEmptyTransaction(), amount: calculatedUllage, accountId: ullageAccountId, categoryId: ullageCategoryId}
+                // transaction.id =  (await TransactionService.SaveTransactions([transaction]))[0].id
+                // await reloadAccount(1, ullageTransaction.accountId)
+                // dispatch('transactionSubmit', { ullageTransaction })
+                ullageInput = ''
+                ullageAccountId = ullageCategoryId = realAmount = cash = 0
+            }
+            catch { 
+                alert('server error')
+            } finally {
+                saving = false
+            }
+        }
     }
 
     const ullageCancel = () => {
         ullageInput = ''
         resetUllageErrorFlags()
-        ullageAccountId = ullageCategoryId = realAmount = cash = 0 // this does not clear texts when Esc pressed
+        ullageAccountId = ullageCategoryId = realAmount = cash = 0
     }
 
 </script>
@@ -258,7 +268,7 @@
         <span class={ullageCategoryError ? 'error-text': ''}>{ullageCategoryText}</span>\
         <span class={realAmountError ? 'error-text': ''}>{realAmountText}</span>\
         <span class={cashError ? 'error-text': ''}>{cashText}</span>&#8594;
-        <span class={cashError ? 'error-text': ''}>{ullageText}</span>
+        <span>{ullageText}</span>
     </label>
     {/if}
 </div>
@@ -273,7 +283,7 @@
         .input-group { 
             display: flex; flex-direction: row; gap: 5px; 
             .small-buttons { 
-                display: flex; flex-direction: column; gap: 1px;
+                display: flex; flex-direction: column; gap: 2px;
                 button { min-height: 0; height: calc($control-min-height/2 - 1px); padding: 2px; font-size: xx-small; } 
             }
         }
