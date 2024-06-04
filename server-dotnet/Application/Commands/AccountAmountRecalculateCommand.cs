@@ -22,7 +22,7 @@ public class AccountAmountRecalculateCommandHandler
     public async Task<Either<bool, AppException>> Handle(AccountAmountRecalculateCommand command)
     {
         var calculatedAmounts = await _dbContext.Transactions
-                                        .Where(x => x.OwnerId == command.OwnerId && command.Accounts.Contains(x.AccountId))
+                                        .Where(x => x.OwnerId == command.OwnerId && x.Active && command.Accounts.Contains(x.AccountId))
                                         .GroupBy(x => x.AccountId)
                                         .Select(g => new { AccountId = g.Key, Amount = g.Sum(s => s.Amount)})
                                         .ToListAsync();

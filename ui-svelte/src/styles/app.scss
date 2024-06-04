@@ -44,6 +44,10 @@ button {
     }
 }
 
+.button-outlined-toggled { border: 1px solid $primary-color-dark; background-color: $primary-color; color: $text-color; 
+    &:active { background-color: $primary-color-dark; color: $text-color; } 
+}
+
 // inputs
 input {
     border: 1px solid $primary-color-dark; 
