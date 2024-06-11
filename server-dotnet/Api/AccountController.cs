@@ -3,7 +3,6 @@ using TransactionService.Application.Models;
 using TransactionService.Application.Commands;
 using AutoMapper;
 using TransactionService.Application.Interfaces;
-//using TransactionService.DataImporter;
 
 namespace TransactionService.Api;
 
@@ -34,11 +33,4 @@ public class AccountController
             exception => new BadRequestObjectResult(exception.Message)
         );
     }
-
-    // [HttpGet()]
-    // public async Task<ActionResult<bool>> ImportStuff(){ // to do : remove it later
-    //     var importer = new Importer(_dbContext);
-    //     await importer.ImportFromCsv("bd-n-all");
-    //     return true;
-    // }
 }
