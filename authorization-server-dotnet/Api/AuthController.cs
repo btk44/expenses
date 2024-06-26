@@ -37,7 +37,7 @@ public class AuthController: ControllerBase
         var logoutCommandHandler = new LogoutCommandHandler(_dbContext, _tokenService);
 
         var command = new LogoutCommand() {
-            AccountName = GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"]),
+            AccountId = Convert.ToInt32(GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"])),
             RefreshToken = refreshToken
         };
 
@@ -52,7 +52,7 @@ public class AuthController: ControllerBase
     public async Task<ActionResult<TokenData>> Refresh([FromBody] string refreshToken){
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(_dbContext, _configuration, _tokenService);
         var command = new RefreshTokenCommand() {
-            AccountName = GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"]),
+            AccountId = Convert.ToInt32(GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"])),
             RefreshToken = refreshToken
         };
 

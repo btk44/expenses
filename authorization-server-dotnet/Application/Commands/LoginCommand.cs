@@ -28,29 +28,45 @@ public class LoginCommandHandler {
 
     public async Task<Either<TokenData, AppException>> Handle(LoginCommand command){
         if(string.IsNullOrEmpty(command.AccountName) || string.IsNullOrEmpty(command.Password))
-            throw new AppException("Missing login data");
+            return new AppException("Missing login data");
 
         var account = await _dbContext.Accounts
                                         .Include(x => x.RefreshTokens)
                                         .Include(x => x.LoginAttempt)
                                         .FirstOrDefaultAsync(x => x.Active && x.Name == command.AccountName);
+
+        if(account == null)
+            return new AppException("Account does not exist");
+
         var maxLoginAttempts = Convert.ToInt32(_configuration["Auth:MaxFailedLogins"]);
         var blockAccountTime = TimeSpan.FromMinutes(Convert.ToInt32(_configuration["Auth:BlockAccountTimeInMinutes"]));
-        //var timeFromLastAttempt = DateTime.Now - account.LoginAttempt.LastAttemptDate;
 
-        var test = _passwordHasher.HashPassword(account.Name, command.Password);
+        if (account.LoginAttempt == null)
+            account.LoginAttempt = new LoginAttempt(){ FailedAttemptsCount = 0, LastAttemptDate = DateTime.Now };
 
-        // if (account.LoginAttempt.FailedAttemptsCount > maxLoginAttempts && timeFromLastAttempt < blockAccountTime)
-        //     throw new AppException("Account is blocked");
+        var timeFromLastAttempt = DateTime.Now - account.LoginAttempt.LastAttemptDate;
+        if (account.LoginAttempt.FailedAttemptsCount > maxLoginAttempts)
+            if (timeFromLastAttempt < blockAccountTime)
+                return new AppException("Account is blocked");
+            else
+                account.LoginAttempt.FailedAttemptsCount = 0;      
+        
+        account.LoginAttempt.LastAttemptDate = DateTime.Now;
 
-        if (_passwordHasher.VerifyHashedPassword(account.Name, account.Password, command.Password) != PasswordVerificationResult.Success)
-            throw new AppException("Incorrect password");
+        if (_passwordHasher.VerifyHashedPassword(account.Name, account.Password, command.Password) != PasswordVerificationResult.Success){
+            account.LoginAttempt.FailedAttemptsCount++;
+            await _dbContext.SaveChangesAsync();
+            return new AppException("Incorrect password");
+        }
+        else {
+            account.LoginAttempt.FailedAttemptsCount = 0;
+        }
 
         var now = DateTime.Now;
         var tokenData = _tokenService.CreateTokenData(new Dictionary<string, string>() { {_configuration["Auth:UserClaim"], account.Id.ToString()} });
 
         if (tokenData == null)
-            throw new AppException("Token generation error");
+            return new AppException("Token generation error");
 
         var refreshToken = new RefreshToken() { Token = tokenData.RefreshToken, 
                                                 ExpiresAt = tokenData.RefreshExpirationTime,

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthService.Application.Commands;
 
 public class LogoutCommand{
-    public string AccountName { get; set; }
+    public int AccountId { get; set; }
     public string RefreshToken { get; set; }
 }
 
@@ -23,8 +23,10 @@ public class LogoutCommandHandler {
     public async Task<Either<bool, AppException>> Handle(LogoutCommand command){
         var account = await _dbContext.Accounts
                                         .Include(x => x.RefreshTokens)
-                                        .Include(x => x.LoginAttempt)
-                                        .FirstOrDefaultAsync(x => x.Active && x.Name == command.AccountName);
+                                        .FirstOrDefaultAsync(x => x.Active && x.Id == command.AccountId);
+
+        if(account == null)
+            return new AppException("Account does not exist");
 
         account.RefreshTokens.Remove(account.RefreshTokens.FirstOrDefault(rf => rf.Token == command.RefreshToken));
         await _dbContext.SaveChangesAsync();
