@@ -21,7 +21,7 @@ public class ApplicationDbContextInitialiser{
             Console.WriteLine("=== Inserting account data ===");
 
             var accounts = new List<Account>(){
-                new() { Name = "Test", Password = "test", Active = true },
+                new() { Name = "test", Password = "AQAAAAIAAYagAAAAEFfRyqvs6ANFb1eGhPIaRv45dsv12m4S6AztwUkHkZYeG6+uA8IWBWrKBZTVTO8cCw==", Active = true }, // pass: test
             };
 
             _dbContext.Accounts.AddRange(accounts);         

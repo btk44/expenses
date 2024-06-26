@@ -1,10 +1,12 @@
 using AuthService.Api.Middleware;
+using AuthService.Application;
 using AuthService.Infrastructure;
 
 var CorsOrigins = "CorsOriginsAllowed";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -21,8 +23,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
 app.UseRouting();
+app.UseAuthorization();
 app.UseCors(CorsOrigins);
 app.MapControllers();
 app.UseMiddleware<ErrorHandlerMiddleware>();
