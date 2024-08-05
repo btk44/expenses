@@ -31,7 +31,7 @@ namespace AuthService.Infrastructure.Migrations
                 columns: table => new
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false),
-                    LastAttemptDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastAttemptDateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FailedAttemptsCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -52,7 +52,7 @@ namespace AuthService.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

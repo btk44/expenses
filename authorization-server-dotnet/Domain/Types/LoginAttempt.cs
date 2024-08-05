@@ -1,7 +1,7 @@
 namespace AuthService.Domain.Types;
 
 public class LoginAttempt {
-    public DateTime LastAttemptDate { get; set; }
+    public DateTime LastAttemptDateUtc { get; set; }
     public int FailedAttemptsCount { get; set; }
 
     // Navigation properties

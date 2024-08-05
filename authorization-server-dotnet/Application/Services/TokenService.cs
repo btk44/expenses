@@ -16,7 +16,7 @@ public class TokenService : ITokenService{
 
     public TokenData CreateTokenData(Dictionary<string, string> tokenClaims)
     {
-        var issueTime = DateTime.Now;
+        var issueTime = DateTime.UtcNow;
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Auth:ServerSigningPassword"]));
         var claims = tokenClaims.Select(tc => new Claim(tc.Key, tc.Value));
 

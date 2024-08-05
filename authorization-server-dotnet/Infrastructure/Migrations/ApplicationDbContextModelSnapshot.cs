@@ -54,7 +54,7 @@ namespace AuthService.Infrastructure.Migrations
                     b.Property<int>("FailedAttemptsCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LastAttemptDate")
+                    b.Property<DateTime>("LastAttemptDateUtc")
                         .HasColumnType("datetime2");
 
                     b.HasKey("AccountId");
@@ -73,7 +73,7 @@ namespace AuthService.Infrastructure.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ExpiresAt")
+                    b.Property<DateTime>("ExpiresAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Token")

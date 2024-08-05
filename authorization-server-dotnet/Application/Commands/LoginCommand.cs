@@ -42,16 +42,19 @@ public class LoginCommandHandler {
         var blockAccountTime = TimeSpan.FromMinutes(Convert.ToInt32(_configuration["Auth:BlockAccountTimeInMinutes"]));
 
         if (account.LoginAttempt == null)
-            account.LoginAttempt = new LoginAttempt(){ FailedAttemptsCount = 0, LastAttemptDate = DateTime.Now };
+            account.LoginAttempt = new LoginAttempt(){ FailedAttemptsCount = 0, LastAttemptDateUtc = DateTime.UtcNow };
 
-        var timeFromLastAttempt = DateTime.Now - account.LoginAttempt.LastAttemptDate;
+        var timeFromLastAttempt = DateTime.UtcNow - account.LoginAttempt.LastAttemptDateUtc;
+        if (timeFromLastAttempt > blockAccountTime)
+            account.LoginAttempt.FailedAttemptsCount = 0; 
+
         if (account.LoginAttempt.FailedAttemptsCount > maxLoginAttempts)
             if (timeFromLastAttempt < blockAccountTime)
                 return new AppException("Account is blocked");
             else
                 account.LoginAttempt.FailedAttemptsCount = 0;      
         
-        account.LoginAttempt.LastAttemptDate = DateTime.Now;
+        account.LoginAttempt.LastAttemptDateUtc = DateTime.UtcNow;
 
         if (_passwordHasher.VerifyHashedPassword(account.Name, account.Password, command.Password) != PasswordVerificationResult.Success){
             account.LoginAttempt.FailedAttemptsCount++;
@@ -62,20 +65,20 @@ public class LoginCommandHandler {
             account.LoginAttempt.FailedAttemptsCount = 0;
         }
 
-        var now = DateTime.Now;
+        var utcNow = DateTime.UtcNow;
         var tokenData = _tokenService.CreateTokenData(new Dictionary<string, string>() { {_configuration["Auth:UserClaim"], account.Id.ToString()} });
 
         if (tokenData == null)
             return new AppException("Token generation error");
 
         var refreshToken = new RefreshToken() { Token = tokenData.RefreshToken, 
-                                                ExpiresAt = tokenData.RefreshExpirationTime,
+                                                ExpiresAtUtc = tokenData.RefreshExpirationTime,
                                                 AccountId = account.Id,
                                                 Account = account };
 
         account.RefreshTokens.Add(refreshToken);
 
-        _dbContext.RefreshTokens.RemoveRange(_dbContext.RefreshTokens.Where(x => x.AccountId == account.Id && x.ExpiresAt < now));
+        _dbContext.RefreshTokens.RemoveRange(_dbContext.RefreshTokens.Where(x => x.AccountId == account.Id && x.ExpiresAtUtc < utcNow));
         await _dbContext.SaveChangesAsync();
 
         return tokenData;

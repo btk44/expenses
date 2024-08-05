@@ -31,8 +31,8 @@ public class RefreshTokenCommandHandler {
         if(account == null)
             return new AppException("Account does not exist");
 
-        var now = DateTime.Now;
-        if(!account.RefreshTokens.Any(x => x.Token == command.RefreshToken && x.ExpiresAt > now)){
+        var utcNow = DateTime.UtcNow; // see TokenService
+        if(!account.RefreshTokens.Any(x => x.Token == command.RefreshToken && x.ExpiresAtUtc > utcNow)){
             return new AppException("Incorrect or expired refresh token");
         }
 
@@ -42,14 +42,14 @@ public class RefreshTokenCommandHandler {
             return new AppException("Token generation error");
 
         var refreshToken = new RefreshToken() { Token = tokenData.RefreshToken, 
-                                                ExpiresAt = tokenData.RefreshExpirationTime,
+                                                ExpiresAtUtc = tokenData.RefreshExpirationTime,
                                                 AccountId = account.Id,
                                                 Account = account };
 
         account.RefreshTokens.Add(refreshToken);
 
         _dbContext.RefreshTokens.RemoveRange(_dbContext.RefreshTokens.Where(x => x.AccountId == account.Id && 
-                                                                                 (x.ExpiresAt < now || x.Token == command.RefreshToken)));
+                                                                                 (x.ExpiresAtUtc < utcNow || x.Token == command.RefreshToken)));
         await _dbContext.SaveChangesAsync();
 
         return tokenData;
