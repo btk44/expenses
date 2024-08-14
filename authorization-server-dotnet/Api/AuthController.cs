@@ -12,18 +12,22 @@ namespace AuthService.Api;
 public class AuthController: ControllerBase
 {
     private readonly IApplicationDbContext _dbContext;
-    private IConfiguration _configuration;
-    private ITokenService _tokenService;
+    private readonly IConfiguration _configuration;
+    private readonly ITokenService _tokenService;
+    private readonly ILogger _logger;
 
-    public AuthController(IApplicationDbContext dbContext, IConfiguration configuration, ITokenService tokenService)
+    public AuthController(IApplicationDbContext dbContext, IConfiguration configuration, ITokenService tokenService, ILogger<AuthController> logger)
     {
         _dbContext = dbContext;
         _configuration = configuration;
         _tokenService = tokenService;
+        _logger = logger;
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<TokenData>> Login([FromBody] LoginCommand command){
+        LogAction("login", command.AccountName);
+        
         var loginCommandHandler = new LoginCommandHandler(_dbContext, _configuration, _tokenService);
         return (await loginCommandHandler.Handle(command)).Match<ActionResult>(
             success => new OkObjectResult(success),
@@ -34,8 +38,9 @@ public class AuthController: ControllerBase
     [Authorize]
     [HttpPost("logout")]
     public async Task<ActionResult<bool>> Logout([FromBody] string refreshToken){
-        var logoutCommandHandler = new LogoutCommandHandler(_dbContext, _tokenService);
+        LogAction("logout", "---");
 
+        var logoutCommandHandler = new LogoutCommandHandler(_dbContext, _tokenService);
         var command = new LogoutCommand() {
             AccountId = Convert.ToInt32(GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"])),
             RefreshToken = refreshToken
@@ -50,6 +55,8 @@ public class AuthController: ControllerBase
     [Authorize]
     [HttpPost("refresh")]
     public async Task<ActionResult<TokenData>> Refresh([FromBody] string refreshToken){
+        LogAction("refresh", "---");
+                
         var refreshTokenCommandHandler = new RefreshTokenCommandHandler(_dbContext, _configuration, _tokenService);
         var command = new RefreshTokenCommand() {
             AccountId = Convert.ToInt32(GetClaimFromToken(HttpContext.User, _configuration["Auth:UserClaim"])),
@@ -70,5 +77,11 @@ public class AuthController: ControllerBase
         }
 
         return string.Empty;
+    }
+
+    private void LogAction(string actionName, string actionParameter){
+        var caller = HttpContext.GetServerVariable("HTTP_X_FORWARDED_FOR") ?? HttpContext.Connection.RemoteIpAddress?.ToString();
+
+        _logger.LogInformation($"-- Action: {actionName}, action param: {actionParameter}. Call from: {caller} --");
     }
 }

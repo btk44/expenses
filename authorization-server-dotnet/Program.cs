@@ -5,6 +5,9 @@ using AuthService.Infrastructure;
 var CorsOrigins = "CorsOriginsAllowed";
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 
