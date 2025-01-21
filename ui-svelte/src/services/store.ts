@@ -90,9 +90,9 @@ export const reloadAccount = async (ownerId: number, accountId: number) => {
     }
 }
 
-export const accountCurrencyMap = () => {
+export const accountCurrencyMap = () : any => {
     let accounts = get(accountStoreReadOnly)
-    let accountToCurrencyMap = {}
+    let accountToCurrencyMap: any = {}
     let currencyDictionary = get(currencyStoreReadOnly)
     Object.keys(accounts).forEach(accKey => { accountToCurrencyMap[accKey] = currencyDictionary[accounts[accKey].currencyId].code })
     return accountToCurrencyMap

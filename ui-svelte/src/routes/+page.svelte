@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-    import AccountTable from '../components/account-table.svelte';
-    import Card from '../components/card.svelte';
-	import CategoryTable from '../components/category-table.svelte';
-	import { initDataStore } from '../services/store';
-	import TransactionTable from '../components/transaction-table.svelte';
+	import { onMount } from 'svelte'
+    import AccountTable from '../components/account-table.svelte'
+    import Card from '../components/card.svelte'
+	import CategoryTable from '../components/category-table.svelte'
+	import { initDataStore } from '../services/store'
+	import Transactions from '../components/transactions/transactions.svelte'
 
-    let dataLoaded = false
+    let dataLoaded = $state(false)
 
     onMount(async () => { 
         try{
@@ -25,7 +25,7 @@
     {#if dataLoaded}
     <div class="transactions">
         <Card>
-            <TransactionTable></TransactionTable>
+            <Transactions></Transactions>
         </Card>
     </div>
     <div class="accounts">
@@ -95,6 +95,7 @@
     // }    
 
     .main-page {
+        /**/
     }
 </style>
 

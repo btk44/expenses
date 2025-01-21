@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { type Category } from "../models/category";
-	import { categoryStoreReadOnly } from "../services/store";
+	import { type Category } from "../models/category"
+	import { categoryStoreReadOnly } from "../services/store"
     
+    //setup values
     const headers = ['id', 'nazwa'] 
     const categories = (() => { 
         const originalCategories = $categoryStoreReadOnly
@@ -18,17 +19,19 @@
 
 <div class="data">
     <table>
-        <tr>
-            <th colspan="2" class="aln-l">{headers[0]}</th>
-            <th class="aln-l">{headers[1]}</th>
-        </tr>
-        {#each categories as category}
-        <tr>
-            <td class="aln-c w-15pc">{@html category.parentId > 0 ? '.' : category.id}</td>
-            <td class="aln-c w-15pc">{@html category.parentId > 0 ? category.id : '.'}</td>
-            <td class="aln-l w-70pc">{category.name}</td>
-        </tr>
-        {/each}
+        <tbody>
+            <tr>
+                <th colspan="2" class="aln-l">{headers[0]}</th>
+                <th class="aln-l">{headers[1]}</th>
+            </tr>
+            {#each categories as category}
+            <tr>
+                <td class="aln-c w-15pc">{@html category.parentId > 0 ? '.' : category.id}</td>
+                <td class="aln-c w-15pc">{@html category.parentId > 0 ? category.id : '.'}</td>
+                <td class="aln-l w-70pc">{category.name}</td>
+            </tr>
+            {/each}
+        </tbody>
     </table>
 </div>
 

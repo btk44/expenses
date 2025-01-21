@@ -23,3 +23,17 @@ export function GetEmptyTransaction() : Transaction {
         active: true
     }
 }
+
+export function CopyTransaction(sourceTransaction: Transaction): Transaction {
+    return {
+        ownerId: sourceTransaction.ownerId,
+        id: sourceTransaction.id,
+        date: structuredClone(sourceTransaction.date),
+        accountId: sourceTransaction.accountId,
+        amount: sourceTransaction.amount,
+        categoryId: sourceTransaction.categoryId,
+        comment: sourceTransaction.comment,
+        gid: sourceTransaction.gid,
+        active: sourceTransaction.active
+    }
+}
