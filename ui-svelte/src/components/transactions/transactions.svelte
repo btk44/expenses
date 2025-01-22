@@ -102,14 +102,16 @@
     {#if !data.loaded || saving}
     <div class="mask"><div class="loader"></div></div>
     {/if}
-    <TransactionTable displayTransactions = {data.displayTransactions}
-                      page = {data.page}
-                      pageCount = {data.pageCount}
-                      pageSize = {pageSize}
-                      selectedRow = {selectedTransaction.index}
-                      {onFilterData}
-                      {onRowSelected}
-                      {onPageChange}></TransactionTable>
+    <div class="table">
+        <TransactionTable displayTransactions = {data.displayTransactions}
+                        page = {data.page}
+                        pageCount = {data.pageCount}
+                        pageSize = {pageSize}
+                        selectedRow = {selectedTransaction.index}
+                        {onFilterData}
+                        {onRowSelected}
+                        {onPageChange}></TransactionTable>
+                    </div>
     <div class="inputs">
         {#if standardInputMode}
         <div>
@@ -137,12 +139,19 @@
         justify-content: space-between;
         height: 100%;
 
+        .table{
+            height: calc(100% - $control-min-height*2);
+        }
+
         .inputs {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
+            height: $control-min-height*2;
 
-            button { height: $control-min-height; margin: 5px 5px 5px 0px; writing-mode: sideways-lr; font-size: xx-small; text-transform: lowercase; padding: 0;}
+            button { height: $control-min-height; margin: 5px 5px 5px 0px; 
+                writing-mode: sideways-rl; -webkit-writing-mode: vertical-rl; 
+                font-size: xx-small; text-transform: lowercase; padding: 0;}
         }
     }
 </style>
