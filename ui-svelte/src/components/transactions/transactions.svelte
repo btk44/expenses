@@ -13,7 +13,7 @@
     const pageSize = 16
     const page = 0
     const defaultFilters: TransactionSearchFilters = {ownerId: 1, active: true}
-    const defaultTransactionSelection = { index: -1, transaction: GetEmptyTransaction() }
+    const getDefaultTransactionSelection = () => { return { index: -1, transaction: GetEmptyTransaction() } }
 
     // states
     let data = $state({
@@ -25,7 +25,7 @@
     })
 
     let saving = $state(false)
-    let selectedTransaction = $state(defaultTransactionSelection)
+    let selectedTransaction = $state(getDefaultTransactionSelection())
     let standardInputMode = $state(true)
 
     // events
@@ -64,7 +64,7 @@
     const onFilterData = (filters: TransactionSearchFilters) => { data.filters = filters; loadTransactionPage(0) }
     const onRowSelected = (index: number, transaction: Transaction) => { 
         if (index === -1)
-            selectedTransaction = defaultTransactionSelection
+            selectedTransaction = getDefaultTransactionSelection()
         else
             selectedTransaction = { index: index, transaction: transaction }
     }
@@ -90,12 +90,12 @@
                     data.displayTransactions[data.displayTransactions.length] = transaction
             }
 
-            selectedTransaction = defaultTransactionSelection
+            selectedTransaction = getDefaultTransactionSelection()
         }
         catch { alert('server error') }
         finally{ saving = false }
     }
-    const onTransactionEditCancel = () => { selectedTransaction = defaultTransactionSelection }
+    const onTransactionEditCancel = () => { selectedTransaction = getDefaultTransactionSelection() }
 </script>
 
 <div class="transactions">
